@@ -1,0 +1,13 @@
+name = "MMEvents"
+uuid = "d32fc40f-6cc2-4d47-bc8e-739cf280b49f"
+authors = ["Tim Knab"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1.10"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
