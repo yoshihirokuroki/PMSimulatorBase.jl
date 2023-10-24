@@ -1,5 +1,5 @@
 using SciMLBase
-using ParameterizedModels
+using PMParameterized
 function checkRateTinf(amt::Union{Float64, Vector{Float64}}, rate::Union{Float64,Vector{Float64}, Nothing}, tinf::Union{Float64,Vector{Float64}, Nothing})
     if isnothing(rate) && !isnothing(tinf)
         rate = amt ./ tinf

@@ -2,7 +2,7 @@
 
 julia_version = "1.10.0-beta3"
 manifest_format = "2.0"
-project_hash = "6e1af5d033343e12acf8445b54d46a4d8b5d6ae8"
+project_hash = "97569549d21a3692e96a60f38c2e2a02565d5c40"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "5d2e21d7b0d8c22f67483ef95ebdc39c0e6b6003"
@@ -1743,6 +1743,12 @@ git-tree-sha1 = "66b2fcd977db5329aa35cac121e5b94dd6472198"
 uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
 version = "0.11.28"
 
+[[deps.PMParameterized]]
+deps = ["ComponentArrays", "DifferentialEquations", "MacroTools", "ModelingToolkit", "SciMLBase", "SciMLSensitivity", "Symbolics", "Unitful"]
+path = "/Users/knabt/.julia/dev/PMParameterized"
+uuid = "99b5832f-53bf-45ba-a9c8-837ddefabddf"
+version = "0.1.0"
+
 [[deps.PNGFiles]]
 deps = ["Base64", "CEnum", "ImageCore", "IndirectArrays", "OffsetArrays", "libpng_jll"]
 git-tree-sha1 = "5ded86ccaf0647349231ed6c0822c10886d4a1ee"
@@ -1778,12 +1784,6 @@ deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "FriBidi_jl
 git-tree-sha1 = "4745216e94f71cb768d58330b059c9b76f32cb66"
 uuid = "36c8627f-9965-5494-a995-c6b170f724f3"
 version = "1.50.14+0"
-
-[[deps.ParameterizedModels]]
-deps = ["ComponentArrays", "DifferentialEquations", "MacroTools", "ModelingToolkit", "SciMLBase", "SciMLSensitivity", "Symbolics", "Unitful"]
-path = "/Users/knabt/.julia/dev/ParameterizedModels"
-uuid = "99b5832f-53bf-45ba-a9c8-837ddefabddf"
-version = "0.1.0"
 
 [[deps.Parameters]]
 deps = ["OrderedCollections", "UnPack"]
@@ -2094,9 +2094,9 @@ version = "0.6.39"
 
 [[deps.SciMLBase]]
 deps = ["ADTypes", "ArrayInterface", "ChainRulesCore", "CommonSolve", "ConstructionBase", "Distributed", "DocStringExtensions", "EnumX", "FillArrays", "FunctionWrappersWrappers", "IteratorInterfaceExtensions", "LinearAlgebra", "Logging", "Markdown", "PrecompileTools", "Preferences", "RecipesBase", "RecursiveArrayTools", "Reexport", "RuntimeGeneratedFunctions", "SciMLOperators", "StaticArraysCore", "Statistics", "SymbolicIndexingInterface", "Tables", "TruncatedStacktraces", "ZygoteRules"]
-git-tree-sha1 = "317f77cb31f7a0275cdd045aa7b3526ebc15c817"
+git-tree-sha1 = "151c322c309d879d114d1c0bee69c61d5933357f"
 uuid = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
-version = "2.4.0"
+version = "2.4.3"
 
     [deps.SciMLBase.extensions]
     SciMLBasePyCallExt = "PyCall"
