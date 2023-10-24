@@ -1,4 +1,5 @@
-using Tidier
+using TidierData
+using DataFrames
 function df2evs(df::AbstractDataFrame)
     # do conversions of column names in input data
     if "AMT" in names(idf); rename!(idf, :AMT => :amt); end
@@ -38,6 +39,7 @@ function df2evs(df::AbstractDataFrame)
 
     params_in_df = Symbol.(names(df)[Symbol.(names(df)) ∉ [:amt, :time, :cmt, :evid, :rate, :ii, :addl, :id, :F, :alag, :ss]])
     ids = unique(df.id)
+    instancevec = PMInstance[]
     for idtmp in ids
         df_id = @chain df begin
             @filter(id == idtmp)
@@ -58,6 +60,13 @@ function df2evs(df::AbstractDataFrame)
                 erorr("EVIDs 2, 3, and 4 not currently supported")
             end
         end
+        instance_i = PMInstance(inputs = ev_inputs_id, updates = ev_updates_id, ID = idtmp)
+        push!(instancevec, instance_i)
+    end
+    out = PMEnsemble(instances = instancevec, _solution = nothing)
+    return out
+end
+
     
 
 
