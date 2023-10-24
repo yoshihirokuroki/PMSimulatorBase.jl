@@ -1,16 +1,16 @@
-using MMEvents
+using PMEvents
 using Documenter
 
-DocMeta.setdocmeta!(MMEvents, :DocTestSetup, :(using MMEvents); recursive=true)
+DocMeta.setdocmeta!(PMEvents, :DocTestSetup, :(using PMEvents); recursive=true)
 
 makedocs(;
-    modules=[MMEvents],
+    modules=[PMEvents],
     authors="Tim Knab",
-    repo="https://github.com/timknab/MMEvents.jl/blob/{commit}{path}#{line}",
-    sitename="MMEvents.jl",
+    repo="https://github.com/timknab/PMEvents.jl/blob/{commit}{path}#{line}",
+    sitename="PMEvents.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://timknab.github.io/MMEvents.jl",
+        canonical="https://timknab.github.io/PMEvents.jl",
         edit_link="main",
         assets=String[],
     ),
@@ -20,6 +20,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/timknab/MMEvents.jl",
+    repo="github.com/timknab/PMEvents.jl",
     devbranch="main",
 )

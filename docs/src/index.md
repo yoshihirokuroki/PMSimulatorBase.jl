@@ -1,14 +1,14 @@
 ```@meta
-CurrentModule = MMEvents
+CurrentModule = PMEvents
 ```
 
-# MMEvents
+# PMEvents
 
-Documentation for [MMEvents](https://github.com/timknab/MMEvents.jl).
+Documentation for [PMEvents](https://github.com/timknab/PMEvents.jl).
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [MMEvents]
+Modules = [PMEvents]
 ```

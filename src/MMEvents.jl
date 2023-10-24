@@ -1,5 +1,10 @@
-module MMEvents
+module PMEvents
+using ModelingToolkit
+include("events.jl")
+include("assemble.jl")
 
-# Write your package code here.
+export MMEvent
+export MMUpdate
+
 
 end

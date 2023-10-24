@@ -1,6 +1,6 @@
-using MMEvents
+using PMEvents
 using Test
 
-@testset "MMEvents.jl" begin
+@testset "PMEvents.jl" begin
     # Write your tests here.
 end
