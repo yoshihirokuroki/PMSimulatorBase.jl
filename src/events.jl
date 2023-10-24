@@ -6,40 +6,44 @@ function checkRateTinf(amt::Union{Float64, Vector{Float64}}, rate::Union{Float64
     elseif !isnothing(rate) && isnothing(tinf)
         tinf = amt./rate
     elseif !isnothing(rate) && !isnothing(tinf)
-        error("Cannot specify a rate and infusion time")
+        if rate != amt./tinf
+            error("If rate and infusion time are specified, they must result in amt being delivered")
+        end
     end
     return (rate, tinf)
 end
 
 
-Base.@kwdef struct MMInput
-    time::Union{Float64, Vector{Float64}}
-    amt::Union{Float64, Vector{Float64}}
+Base.@kwdef struct PMInput
+    time::Float64
+    amt::Float64
     input::Symbol
-    tinf::Union{Float64, Vector{Float64}, Nothing} = nothing
+    tinf::Union{Float64, Nothing} = nothing
     addl::Int64 = 0
     ii::Float64 = 0.0
-    rate::Union{Float64, Vector{Float64}, Nothing} = nothing
-    function MMInput(time, amt, input, tinf, addl, ii, rate)
+    rate::Union{Float64, Nothing} = nothing
+    function PMInput(time, amt, input, tinf, addl, ii, rate)
         rate, tinf = checkRateTinf(amt, rate, tinf)
-        tinf = isnothing(tinf) ? [tinf] : tinf # Make tinf a Vector{Nothing} for the checks below
-        if length(time)>1 && any(i -> length(i) != length(time), [amt, tinf, addl]) && all(i -> length(i) != 1,[amt,tinf,addl])
-            error("Invalid dimensions of time, and one of [amt, tinf, input, addl]")
-        elseif length(time) == 1 && any(i -> length(i) > 1, [amt, tinf, addl])
-            error("Invalid dimensions of time, and one of [amt, tinf, input, addl]")
-        else
-            tinf = tinf == [nothing] ? nothing : tinf # convert back to nothing
-            new(time, amt, input, tinf, addl, ii, rate)
+        # tinf = isnothing(tinf) ? [tinf] : tinf # Make tinf a Vector{Nothing} for the checks below
+        if add>0.0 && iszero(ii)
+            error("ii must be greater than 0.0 for additional doses")
         end
+        # if length(time)>1 && any(i -> length(i) != length(time), [amt, tinf, addl]) && all(i -> length(i) != 1,[amt,tinf,addl])
+        #     error("Invalid dimensions of time, and one of [amt, tinf, input, addl]")
+        # elseif length(time) == 1 && any(i -> length(i) > 1, [amt, tinf, addl])
+        #     error("Invalid dimensions of time, and one of [amt, tinf, input, addl]")
+        # else
+        tinf = tinf == [nothing] ? nothing : tinf # convert back to nothing
+        new(time, amt, input, tinf, addl, ii, rate)
+        # end
     end
 end
 
-# What do we do for dose and update of state occuring at the same time --> Which comes first?
-Base.@kwdef struct MMUpdate
-    time::Union{Float64, Vector{Float64}}
+Base.@kwdef struct PMUpdate
+    time::Float64
     quantity::Symbol
-    value::Union{Float64, Vector{Float64}}
-    function MMUpdate(time, quantity, value)
+    value::Float64
+    function PMUpdate(time, quantity, value)
         if length(time) != length(value)
             error("Time and value vectors must be of equal length")
         else
@@ -48,17 +52,16 @@ Base.@kwdef struct MMUpdate
     end
 end
 
-Base.@kwdef struct MMInstance
-    inputs::Vector{MMInput}
-    updates::Vector{MMUpdate}
+Base.@kwdef struct PMInstance
+    inputs::Vector{PMInput}
+    updates::Vector{PMUpdate}
     ID::Union{Int64, Symbol}
-    callbacks::CallbackSet
-    _solution::ParameterizedModels.PMSolution
 end
 
-Base.@kwdef struct MMEnsemble
-    instances::Vector{MMInstance}
-    _solution::Vector{ParameterizedModels.PMSolution}
+
+Base.@kwdef struct PMEnsemble
+    instances::Vector{PMInstance}
+    _solution::Vector{PMParameterized.PMSolution}
 end
 
 

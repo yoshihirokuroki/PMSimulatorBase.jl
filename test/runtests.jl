@@ -1,6 +1,6 @@
-using PMEvents
+using PMSimulator
 using Test
 
-@testset "PMEvents.jl" begin
+@testset "PMSimulator.jl" begin
     # Write your tests here.
 end

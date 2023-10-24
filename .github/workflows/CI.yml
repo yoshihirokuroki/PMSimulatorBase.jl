@@ -63,6 +63,6 @@ jobs:
       - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
-            using PMEvents
-            DocMeta.setdocmeta!(PMEvents, :DocTestSetup, :(using PMEvents); recursive=true)
-            doctest(PMEvents)'
+            using PMSimulator
+            DocMeta.setdocmeta!(PMSimulator, :DocTestSetup, :(using PMSimulator); recursive=true)
+            doctest(PMSimulator)'

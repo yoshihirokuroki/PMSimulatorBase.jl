@@ -1,16 +1,16 @@
-using PMEvents
-using ParameterizedModels
+using PMSimulator
+using PMParameterized
 using ModelingToolkit
 using SciMLBase
 using DiffEqCallbacks
 
-InputOrUpdate = Union{MMInput, MMUpdate}
+InputOrUpdate = Union{PMInput, PMUpdate}
 
 
 
 indexof(sym::Symbol, syms) = findfirst(isequal(sym), syms)
 
-function getMTKindex(mdl::ParameterizedModels.PMModel, sym::Symbol)
+function getMTKindex(mdl::PMParameterized.PMModel, sym::Symbol)
     psyms = Symbol.(parameters(mdl._sys))
     ssyms = [x.metadata[ModelingToolkit.VariableSource][2] for x in states(mdl._sys)]
     pindex = indexof(sym, psyms)
@@ -28,7 +28,7 @@ end
 
 
 
-function updateParameterOrState!(mdl::ParameterizedModels.PMModel, sym::Symbol, val::Float64)
+function updateParameterOrState!(mdl::PMParameterized.PMModel, sym::Symbol, val::Float64)
     if sym in mdl.parameters.names
         mdl.parameters[sym] = val
     elseif sym in mdl.states.names
@@ -39,17 +39,13 @@ function updateParameterOrState!(mdl::ParameterizedModels.PMModel, sym::Symbol, 
 end
 
 
-function generateInputCB(mdl::ParameterizedModels.PMModel, tstart::Float64, tinf::Union{Float64,Nothing}, amt::Float64, input::Symbol)
-    # cbset = CallbackSet()
+function generateInputCB(mdl::PMParameterized.PMModel, tstart::Float64, tinf::Union{Float64,Nothing}, amt::Float64, input::Symbol)
     cbset = DiscreteCallback[]
     if tstart == 0.0
         updateParameterOrState!(mdl, input, amt)
     else
         index = getMTKindex(mdl, input)
-        # affectstart!(integrator) = integrator.u[index] += amt/tinf
         if tinf > 0.0
-            # println(index)
-            # affecton
             cbstartinf = PresetTimeCallback(tstart, (integrator) -> integrator.p[index] =  integrator.p[index] + amt/tinf)
             push!(cbset, cbstartinf)
         elseif tinf < 0.0
@@ -63,51 +59,64 @@ function generateInputCB(mdl::ParameterizedModels.PMModel, tstart::Float64, tinf
     end
     # Infusion end
     if tinf != 0.0
-        # affectoff(integrator) = integrator.p[index] = integrator.p[index] - amt/tinf
         cbend = PresetTimeCallback(tstart+tinf, (integrator) -> integrator.p[index] = integrator.p[index] - amt/tinf)
         push!(cbset, cbend)
     end
     return cbset
 end
 
+function generateUpdateCB(mdl::PMParameterized.PMModel, update::PMUpdate)
+    time = update.time
+    quantity = update.quantity
+    value = update.value
+    if time == 0.0
+        updateParameterOrState!(mdl, quantity, value)
+        return nothing!
+    else
+        index = getMTKindex(mdl, in)
+        cbtmp = PresetTimeCallback(time, (integrator) -> integrator.p[index] = value)
+        # push!(cbset, cbtmp)
+        return cbtmp
+    end
+end
 
-    
 
 
 
-
-
-
-function collect_evs(evs::Union{InputOrUpdate, Vector{MMInput}, Vector{MMUpdate}}, mdl::ParameterizedModels.PMModel)
+function collect_evs(evs::Union{InputOrUpdate, Vector{PMInput}, Vector{PMUpdate}}, mdl::PMParameterized.PMModel)
     if isa(evs, InputOrUpdate)
         evs::Vector{InputOrUpdate} = [evs]
     end
     cbset = DiscreteCallback[]
     for ev in evs
-        if isa(ev, MMInput)
+        if isa(ev, PMInput)
             t = ev.time
             amt = ev.amt
             tinf = ev.tinf
             input = ev.input
             addl = ev.addl
             ii = ev.ii
-            # tinf = isnothing(tinf) ? [nothing] : tinf # Convert to vector for below
-            # tinf = [isnothing(x) ? 0.0 : x for x in tinf]
-            amt = length(amt) == 1 ? amt * ones(length(t)) : amt
-            if !isnothing(tinf)
-                tinf = length(tinf) == 1 ? tinf * ones(length(t)) : tinf
-            else
-                tinf = [0.0 for i = 1:lastindex(t)]
+
+            if !iszero(addl)
+                amt = [amt for i in 1:addl]
+                tinf = [isnothing(tinf) ? 0.0 : tinf for i in 1:addl]
+                t = [t + (ii * (i-1)) for i in 1:addl]
             end
 
             for (i, ti) in enumerate(t)
-                cbset_i = generateInputCB(mdl, ti, tinf[i], amt[i],input)
+                cbset_i = generateInputCB(mdl, ti, tinf[i], amt[i], input)
                 append!(cbset, cbset_i)
             end
+        elseif isa(ev, PMUpdate)
+            cb_i = generateUpdateCB(mdl, PMUpdate)
+            push!(cbset, cb_i)
+        else
+            error("Something went wrong")
         end
     end
     return CallbackSet(cbset...)
 end
+
 
         
 

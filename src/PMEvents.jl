@@ -1,10 +1,10 @@
-module PMEvents
+module PMSimulator
 using ModelingToolkit
 include("events.jl")
 include("assemble.jl")
 
-export MMEvent
-export MMUpdate
+export PMUpdate
+export PMInput
 
 
 end

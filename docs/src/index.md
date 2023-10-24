@@ -1,14 +1,14 @@
 ```@meta
-CurrentModule = PMEvents
+CurrentModule = PMSimulator
 ```
 
-# PMEvents
+# PMSimulator
 
-Documentation for [PMEvents](https://github.com/timknab/PMEvents.jl).
+Documentation for [PMSimulator](https://github.com/timknab/PMSimulator.jl).
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [PMEvents]
+Modules = [PMSimulator]
 ```

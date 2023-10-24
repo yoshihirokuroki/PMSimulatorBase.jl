@@ -1,16 +1,16 @@
-using PMEvents
+using PMSimulator
 using Documenter
 
-DocMeta.setdocmeta!(PMEvents, :DocTestSetup, :(using PMEvents); recursive=true)
+DocMeta.setdocmeta!(PMSimulator, :DocTestSetup, :(using PMSimulator); recursive=true)
 
 makedocs(;
-    modules=[PMEvents],
+    modules=[PMSimulator],
     authors="Tim Knab",
-    repo="https://github.com/timknab/PMEvents.jl/blob/{commit}{path}#{line}",
-    sitename="PMEvents.jl",
+    repo="https://github.com/timknab/PMSimulator.jl/blob/{commit}{path}#{line}",
+    sitename="PMSimulator.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://timknab.github.io/PMEvents.jl",
+        canonical="https://timknab.github.io/PMSimulator.jl",
         edit_link="main",
         assets=String[],
     ),
@@ -20,6 +20,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/timknab/PMEvents.jl",
+    repo="github.com/timknab/PMSimulator.jl",
     devbranch="main",
 )
