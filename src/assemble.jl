@@ -96,13 +96,13 @@ function collect_evs(evs::Union{InputOrUpdate, Vector{PMInput}, Vector{PMUpdate}
             input = ev.input
             addl = ev.addl
             ii = ev.ii
-
             if !iszero(addl)
                 amt = [amt for i in 1:addl]
                 tinf = [isnothing(tinf) ? 0.0 : tinf for i in 1:addl]
                 t = [t + (ii * (i-1)) for i in 1:addl]
+            else
+                tinf = isnothing(tinf) ? 0.0 : tinf
             end
-
             for (i, ti) in enumerate(t)
                 cbset_i = generateInputCB(mdl, ti, tinf[i], amt[i], input)
                 append!(cbset, cbset_i)

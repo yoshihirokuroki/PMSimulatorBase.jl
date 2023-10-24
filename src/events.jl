@@ -25,7 +25,7 @@ Base.@kwdef struct PMInput
     function PMInput(time, amt, input, tinf, addl, ii, rate)
         rate, tinf = checkRateTinf(amt, rate, tinf)
         # tinf = isnothing(tinf) ? [tinf] : tinf # Make tinf a Vector{Nothing} for the checks below
-        if add>0.0 && iszero(ii)
+        if addl>0.0 && iszero(ii)
             error("ii must be greater than 0.0 for additional doses")
         end
         # if length(time)>1 && any(i -> length(i) != length(time), [amt, tinf, addl]) && all(i -> length(i) != 1,[amt,tinf,addl])

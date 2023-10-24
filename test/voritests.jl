@@ -1,5 +1,5 @@
 using Revise
-using ParameterizedModels
+using PMParameterized
 using PMSimulator
 
 
@@ -134,18 +134,16 @@ vori = @model vori begin
 end;
 
 
-# What if we mess up a unit?
-
 
 ev1 = PMSimulator.PMInput(time = 1.0, amt = 4.0, tinf = 0.5, input = :venousInfusion);
 ev2 = PMSimulator.PMInput(time = 10.0, amt = 0.25, input = :Ven);
 evs = PMSimulator.collect_evs([ev1,ev2], vori); # Working on moving this into the solve function, should just be able to pass a vector of events
 
-vori._odeproblem.tspan = (0.0, 25.0) # This is kind of hidden, working on a fix...
+vori.tspan = (0.0, 25.0) # This is kind of hidden, working on a fix...
 
 vori.parameters.VenIC = .0;
-sol1 = ParameterizedModels.solve(vori);
-sol2 = ParameterizedModels.solve(vori, callback = evs);
+sol1 = solve(vori);
+sol2 = solve(vori, callback = evs);
 
 using Plots
 plot(sol1.t,sol1.Ven)
@@ -154,7 +152,7 @@ plot!(sol2.t,sol2.Ven)
 # Observed
 plot(sol2.t, sol2.Adipose) # Venous drug concentration
 vori.parameters.Cscaler = 100.0
-soltmp = ParameterizedModels.solve(vori, callback = evs);
+soltmp = PMParameterized.solve(vori, callback = evs);
 plot!(soltmp.t, soltmp.Cadiposes_scaled)
 
 # vori.parameters.WEIGHT = 100.0
