@@ -1,5 +1,4 @@
 using SciMLBase
-using PMParameterized
 function checkRateTinf(amt::Union{Float64, Vector{Float64}}, rate::Union{Float64,Vector{Float64}, Nothing}, tinf::Union{Float64,Vector{Float64}, Nothing})
     if isnothing(rate) && !isnothing(tinf)
         rate = amt ./ tinf
@@ -67,7 +66,7 @@ end
 
 Base.@kwdef struct PMEnsemble
     instances::Vector{PMInstance}
-    _solution::Union{Nothing, Vector{PMParameterized.PMSolution}}
+    # _solution::Union{Nothing, Vector{PMParameterized.PMSolution}}
 end
 
 

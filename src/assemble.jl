@@ -1,5 +1,4 @@
 using PMSimulator
-using PMParameterized
 using ModelingToolkit
 using SciMLBase
 using DiffEqCallbacks
