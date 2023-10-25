@@ -2,7 +2,7 @@ using Revise
 using DataFrames
 using CSV
 using Tidier
-using PMSimulator
+using PMSimulatorBase
 include("house.jl");
 theoph = DataFrame(CSV.File("exTheoph.csv"));
 
