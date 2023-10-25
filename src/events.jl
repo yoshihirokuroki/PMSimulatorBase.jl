@@ -61,7 +61,7 @@ end
 
 Base.@kwdef struct PMEnsemble
     instances::Vector{PMInstance}
-    _solution::Vector{PMParameterized.PMSolution}
+    _solution::Union{Nothing, Vector{PMParameterized.PMSolution}}
 end
 
 

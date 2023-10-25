@@ -33,25 +33,28 @@ function updateParameterOrState!(mdl::PMParameterized.PMModel, sym::Symbol, val:
         mdl.parameters[sym] = val
     elseif sym in mdl.states.names
         mdl.states[sym] = val
+    elseif sym in mdl._inputs.names
+        mdl._inputs[sym] = val
     else
         error("Cannot find $sym in parameters or states")
     end
 end
 
 
-function generateInputCB(mdl::PMParameterized.PMModel, tstart::Float64, tinf::Union{Float64,Nothing}, amt::Float64, input::Symbol)
+function generateInputCB(mdl::PMParameterized.PMModel, tstart::Float64, tinf::Union{Float64,Nothing}, amt::Float64, inputP::Symbol, input::Symbol)
     cbset = DiscreteCallback[]
     if tstart == 0.0
         updateParameterOrState!(mdl, input, amt)
     else
-        index = getMTKindex(mdl, input)
+        indexP = getMTKindex(mdl, inputP)
+        indexS = getMTKindex(mdl, input)
         if tinf > 0.0
-            cbstartinf = PresetTimeCallback(tstart, (integrator) -> integrator.p[index] =  integrator.p[index] + amt/tinf)
+            cbstartinf = PresetTimeCallback(tstart, (integrator) -> integrator.p[indexP] =  integrator.p[indexP] + amt/tinf)
             push!(cbset, cbstartinf)
         elseif tinf < 0.0
             error("Cannot have negative infusion time")
         elseif tinf == 0.0
-            cbstartbolus = PresetTimeCallback(tstart, (integrator) -> integrator.u[index] += amt)
+            cbstartbolus = PresetTimeCallback(tstart, (integrator) -> integrator.u[indexS] += amt)
             push!(cbset, cbstartbolus)
         else
             error("Some other error")
@@ -59,7 +62,7 @@ function generateInputCB(mdl::PMParameterized.PMModel, tstart::Float64, tinf::Un
     end
     # Infusion end
     if tinf != 0.0
-        cbend = PresetTimeCallback(tstart+tinf, (integrator) -> integrator.p[index] = integrator.p[index] - amt/tinf)
+        cbend = PresetTimeCallback(tstart+tinf, (integrator) -> integrator.p[indexP] = integrator.p[indexP] - amt/tinf)
         push!(cbset, cbend)
     end
     return cbset
@@ -73,9 +76,8 @@ function generateUpdateCB(mdl::PMParameterized.PMModel, update::PMUpdate)
         updateParameterOrState!(mdl, quantity, value)
         return nothing!
     else
-        index = getMTKindex(mdl, in)
+        index = getMTKindex(mdl, quantity)
         cbtmp = PresetTimeCallback(time, (integrator) -> integrator.p[index] = value)
-        # push!(cbset, cbtmp)
         return cbtmp
     end
 end
@@ -96,6 +98,14 @@ function collect_evs(evs::Union{InputOrUpdate, Vector{PMInput}, Vector{PMUpdate}
             input = ev.input
             addl = ev.addl
             ii = ev.ii
+
+            # Check and make sure that input exists in the state/equation names
+            if input ∉ Base.keys(mdl._inputs._keyvalmap)
+                error("Cannot find input $input in model states/equations")
+            else
+                inputP = mdl._inputs._keyvalmap[input]
+            end
+
             if !iszero(addl)
                 amt = [amt for i in 1:addl]
                 tinf = [isnothing(tinf) ? 0.0 : tinf for i in 1:addl]
@@ -104,7 +114,7 @@ function collect_evs(evs::Union{InputOrUpdate, Vector{PMInput}, Vector{PMUpdate}
                 tinf = isnothing(tinf) ? 0.0 : tinf
             end
             for (i, ti) in enumerate(t)
-                cbset_i = generateInputCB(mdl, ti, tinf[i], amt[i], input)
+                cbset_i = generateInputCB(mdl, ti, tinf[i], amt[i], inputP, input)
                 append!(cbset, cbset_i)
             end
         elseif isa(ev, PMUpdate)

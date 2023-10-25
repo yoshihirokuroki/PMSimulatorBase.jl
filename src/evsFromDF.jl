@@ -1,33 +1,36 @@
 using TidierData
 using DataFrames
-function df2evs(df::AbstractDataFrame)
+function df2evs(dfin::AbstractDataFrame)
+    df = copy(dfin)
     # do conversions of column names in input data
-    if "AMT" in names(idf); rename!(idf, :AMT => :amt); end
-    if "TIME" in names(idf); rename!(idf, :TIME => :time); end
-    if "CMT" in names(idf); rename!(idf, :CMT => :cmt); end
-    if "EVID" in names(idf); rename!(idf, :EVID => :evid); end
-    if "RATE" in names(idf); rename!(idf, :RATE => :rate); end
-    if "TINF" in names(idf); rename!(idf, :TINF => :tinf); end
-    if "II" in names(idf); rename!(idf, :II => :ii); end
-    if "ADDL" in names(idf); rename!(idf, :ADDL => :addl); end
-    if "id" in names(idf); rename!(idf, :id => :ID); end
+    if "AMT" in names(df); rename!(df, :AMT => :amt); end
+    if "TIME" in names(df); rename!(df, :TIME => :time); end
+    if "CMT" in names(df); rename!(df, :CMT => :cmt); end
+    if "EVID" in names(df); rename!(df, :EVID => :evid); end
+    if "RATE" in names(df); rename!(df, :RATE => :rate); end
+    if "TINF" in names(df); rename!(df, :TINF => :tinf); end
+    if "II" in names(df); rename!(df, :II => :ii); end
+    if "ADDL" in names(df); rename!(df, :ADDL => :addl); end
+    if "id" in names(df); rename!(df, :id => :ID); end
 
-    if !("cmt" in names(idf)); idf[:,:cmt] .= 1; end
-    if !("ii" in names(idf)); idf[:,:ii] .= 0.0; end
-    if !("addl" in names(idf)); idf[:,:addl] .= 0; end
-    if !("rate" in names(idf)); idf[:,:rate] .= 0.0; end
-    if !("F" in names(idf)); warning("F not currently supported"); idf[:,:F] .= 1.0; end
-    if !("alag" in names(idf)); warning("alag not currently supported"); idf[:,:alag] .= 0.0; end
-    if !("ss" in names(idf)); warning("ss not currently supported"); idf[:,:ss] .= 0.0; end
+    if !("cmt" in names(df)); df[:,:cmt] .= 1; end
+    if !("ii" in names(df)); df[:,:ii] .= 0.0; end
+    if !("addl" in names(df)); df[:,:addl] .= 0; end
+    if !("rate" in names(df)); df[:,:rate] .= 0.0; end
+    if !("F" in names(df)); @warn "F not currently supported" ; df[:,:F] .= 1.0; end
+    if !("alag" in names(df)); @warn "alag not currently supported" ; df[:,:alag] .= 0.0; end
+    if !("ss" in names(df)); @warn "ss not currently supported" ; df[:,:ss] .= 0.0; end
 
-    if "tinf" ∉ names(idf)
-        for row in eachrow(idf)
+    if "tinf" ∉ names(df)
+        df[!,:tinf] .= 0.0
+        for row in eachrow(df)
             if row.rate != 0.0
                 row.tinf = row.amt/row.rate
             end
         end
-    elseif "tinf" ∈ names(idf)
-        for row in eachrow(idf)
+
+    elseif "tinf" ∈ names(df)
+        for row in eachrow(df)
             if row.rate != 0.0
                 error("Cannot specify both a rate and infusion time")
             else
@@ -37,12 +40,18 @@ function df2evs(df::AbstractDataFrame)
     end
                 
 
-    params_in_df = Symbol.(names(df)[Symbol.(names(df)) ∉ [:amt, :time, :cmt, :evid, :rate, :ii, :addl, :id, :F, :alag, :ss]])
-    ids = unique(df.id)
+
+    params_in_df = Symbol[]
+    for nm in Symbol.(names(df))
+        if nm ∉ [:amt, :time, :cmt, :evid, :rate, :ii, :addl, :ID, :F, :alag, :ss, :input]
+            push!(params_in_df, nm)
+        end
+    end
+    ids = unique(df.ID)
     instancevec = PMInstance[]
     for idtmp in ids
         df_id = @chain df begin
-            @filter(id == idtmp)
+            @filter(ID == !!idtmp)
         end
         ev_inputs_id = PMInput[]
         ev_updates_id = PMUpdate[]
@@ -67,10 +76,3 @@ function df2evs(df::AbstractDataFrame)
     return out
 end
 
-    
-
-
-
-
-
-end

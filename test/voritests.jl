@@ -61,9 +61,7 @@ vori = @model vori begin
         Cscaler = 0.0, [unit = u"mg/L", description = "Add a constant offset to observed concentrations for testing"]
     end
 
-    @inputs begin
-        venousInfusion, [unit = u"mg*hr^-1", description = "Infusion rate of vori into venous blood"]
-    end
+
 
 
     @variables begin
@@ -129,21 +127,21 @@ vori = @model vori begin
     @eq D(Rest) ~ Qre*(Carterial - Crest/(Kpre/BP));
     @eq D(Ven) ~ Qad*(Cadipose/(Kpad/BP)) + Qbr*(Cbrain/(Kpbr/BP)) +
       Qhe*(Cheart/(Kphe/BP)) + Qki*(Ckidney/(Kpki/BP)) + Qli*(Cliver/(Kpli/BP)) + 
-      Qmu*(Cmuscle/(Kpmu/BP)) + Qbo*(Cbone/(Kpbo/BP)) + Qre*(Crest/(Kpre/BP)) - Qlu*Cvenous + venousInfusion;
+      Qmu*(Cmuscle/(Kpmu/BP)) + Qbo*(Cbone/(Kpbo/BP)) + Qre*(Crest/(Kpre/BP)) - Qlu*Cvenous;
     @eq D(Art) ~ Qlu*(Clung/(Kplu/BP) - Carterial);
 end;
 
 
 
-ev1 = PMSimulator.PMInput(time = 1.0, amt = 4.0, tinf = 0.5, input = :venousInfusion);
+ev1 = PMSimulator.PMInput(time = 1.0, amt = 4.0, tinf = 0.5, input = :Ven);
 ev2 = PMSimulator.PMInput(time = 10.0, amt = 0.25, input = :Ven);
-evs = PMSimulator.collect_evs([ev1,ev2], vori); # Working on moving this into the solve function, should just be able to pass a vector of events
+evs = PMSimulator.collect_evs([ev1, ev2], vori); # Working on moving this into the solve function, should just be able to pass a vector of events
 
 vori.tspan = (0.0, 25.0) # This is kind of hidden, working on a fix...
 
-vori.parameters.VenIC = .0;
-sol1 = solve(vori);
-sol2 = solve(vori, callback = evs);
+vori.parameters.VenIC = 4.0;
+sol1 = PMParameterized.solve(vori);
+sol2 = PMParameterized.solve(vori, callback = evs);
 
 using Plots
 plot(sol1.t,sol1.Ven)
@@ -157,7 +155,7 @@ plot!(soltmp.t, soltmp.Cadiposes_scaled)
 
 # vori.parameters.WEIGHT = 100.0
 vori.parameters = (VenIC = 2.0, WEIGHT = 72)
-sol3 = ParameterizedModels.solve(vori, callback=evs);
+sol3 = PMParameterized.solve(vori, callback=evs);
 plot(sol2.t, sol2.Ven)
 plot!(sol3.t,sol3.Ven)
 
