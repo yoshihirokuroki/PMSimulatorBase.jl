@@ -15,11 +15,9 @@ end;
 theoph_ev = PMSimulator.df2evs(theoph);
 house.states.GUT = 0.0
 
-# Need to move check for input in mdl from collect_evs to df2evs so we still get errors in the collect if we define an event that doesn't work. Build events slot into mdl?
 
 ### CREATE COPY OF MODEL FIRST?
 
-### Make sure updateParamOrState checks for infusion vs. bolus
 cbs = PMSimulator.collect_evs([theoph_ev.instances[1].inputs..., theoph_ev.instances[1].updates...], house);
 sol = PMParameterized.solve(house, callback = cbs);
 

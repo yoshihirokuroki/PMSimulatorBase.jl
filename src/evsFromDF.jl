@@ -57,13 +57,13 @@ function df2evs(dfin::AbstractDataFrame)
         ev_updates_id = PMUpdate[]
         for row in eachrow(df_id)
             if row.evid == 1
-                push!(ev_inputs_id, PMInput(time = row.time, amt = row.amt, input = row.input, tinf = row.tinf, addl = row.addl, ii = row.ii, rate = row.rate))
+                push!(ev_inputs_id, PMInput(time = row.time, amt = row.amt, input = row.input, tinf = row.tinf, addl = row.addl, ii = row.ii, rate = row.rate,_dataframe = true))
                 for param_i in params_in_df
-                    push!(ev_updates_id, PMUpdate(time = row.time, quantity = param_i, value = row[param_i]))
+                    push!(ev_updates_id, PMUpdate(time = row.time, quantity = param_i, value = row[param_i], _dataframe = true))
                 end
             elseif row.evid == 0
                 for param_i in params_in_df
-                    push!(ev_updates_id, PMUpdate(time = row.time, quantity = param_i, value = row[param_i]))
+                    push!(ev_updates_id, PMUpdate(time = row.time, quantity = param_i, value = row[param_i],_dataframe = true))
                 end
             elseif row.evid in [2,3,4]
                 erorr("EVIDs 2, 3, and 4 not currently supported")

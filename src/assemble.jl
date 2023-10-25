@@ -96,39 +96,46 @@ end
 function collect_evs(evs, mdl::PMParameterized.PMModel)
     cbset = DiscreteCallback[]
     for ev in evs
-        if isa(ev, PMInput) && ev.input ∈ vcat(mdl.parameters.names, mdl.states.names, mdl._inputs.names)
-            t = ev.time
-            amt = ev.amt
-            tinf = ev.tinf
-            input = ev.input
-            addl = ev.addl
-            ii = ev.ii
+        if isa(ev, PMInput) && !(ev._dataframe) && ev.input ∉ vcat(mdl.parameters.names, mdl.states.names, mdl._inputs.names)
+            error("Error creating event for $(ev.input). $(ev.input) not found in model states, parameters or equations ")
+        elseif isa(ev, PMUpdate) && !(ev._dataframe) && ev.quantity ∉ vcat(mdl.parameters.names, mdl.states.names, mdl._inputs.names)
+            error("Error creating event for $(ev.quantity). $(ev.quantity) not found in model states, parameters or equations ")
+        else
+            if isa(ev, PMInput) && ev.input ∈ vcat(mdl.parameters.names, mdl.states.names, mdl._inputs.names)
 
-            # Check and make sure that input exists in the state/equation names
-            if input ∉ Base.keys(mdl._inputs._keyvalmap)
-                error("Cannot find input $input in model states/equations")
-            else
-                inputP = mdl._inputs._keyvalmap[input]
-            end
+                t = ev.time
+                amt = ev.amt
+                tinf = ev.tinf
+                input = ev.input
+                addl = ev.addl
+                ii = ev.ii
 
-            if !iszero(addl)
-                amt = [amt for i in 1:addl]
-                tinf = [isnothing(tinf) ? 0.0 : tinf for i in 1:addl]
-                t = [t + (ii * (i-1)) for i in 1:addl]
-            else
-                tinf = isnothing(tinf) ? 0.0 : tinf
+                # Check and make sure that input exists in the state/equation names
+                if input ∉ Base.keys(mdl._inputs._keyvalmap)
+                    error("Cannot find input $input in model states/equations")
+                else
+                    inputP = mdl._inputs._keyvalmap[input]
+                end
+
+                if !iszero(addl)
+                    amt = [amt for i in 1:addl]
+                    tinf = [isnothing(tinf) ? 0.0 : tinf for i in 1:addl]
+                    t = [t + (ii * (i-1)) for i in 1:addl]
+                else
+                    tinf = isnothing(tinf) ? 0.0 : tinf
+                end
+                for (i, ti) in enumerate(t)
+                    cbset_i = generateInputCB(mdl, ti, tinf[i], amt[i], inputP, input)
+                    append!(cbset, cbset_i)
+                end
+            elseif isa(ev, PMUpdate) && ev.quantity ∈ vcat(mdl.parameters.names, mdl.states.names, mdl._inputs.names)
+                cb_i = generateUpdateCB(mdl, ev)
+                if !isnothing(cb_i)
+                    push!(cbset, cb_i)
+                end
+            # else
+                # error("Something went wrong")
             end
-            for (i, ti) in enumerate(t)
-                cbset_i = generateInputCB(mdl, ti, tinf[i], amt[i], inputP, input)
-                append!(cbset, cbset_i)
-            end
-        elseif isa(ev, PMUpdate) && ev.quantity ∈ vcat(mdl.parameters.names, mdl.states.names, mdl._inputs.names)
-            cb_i = generateUpdateCB(mdl, ev)
-            if !isnothing(cb_i)
-                push!(cbset, cb_i)
-            end
-        # else
-            # error("Something went wrong")
         end
     end
     return CallbackSet(cbset...)

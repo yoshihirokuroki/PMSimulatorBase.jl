@@ -22,7 +22,8 @@ Base.@kwdef struct PMInput
     addl::Int64 = 0
     ii::Float64 = 0.0
     rate::Union{Float64, Nothing} = nothing
-    function PMInput(time, amt, input, tinf, addl, ii, rate)
+    _dataframe::Bool = false
+    function PMInput(time, amt, input, tinf, addl, ii, rate, _dataframe = false)
         rate, tinf = checkRateTinf(amt, rate, tinf)
         # tinf = isnothing(tinf) ? [tinf] : tinf # Make tinf a Vector{Nothing} for the checks below
         if addl>0.0 && iszero(ii)
@@ -34,7 +35,7 @@ Base.@kwdef struct PMInput
         #     error("Invalid dimensions of time, and one of [amt, tinf, input, addl]")
         # else
         tinf = tinf == [nothing] ? nothing : tinf # convert back to nothing
-        new(time, amt, input, tinf, addl, ii, rate)
+        new(time, amt, input, tinf, addl, ii, rate, _dataframe)
         # end
     end
 end
@@ -43,11 +44,12 @@ Base.@kwdef struct PMUpdate
     time::Float64
     quantity::Symbol
     value::Float64
-    function PMUpdate(time, quantity, value)
+    _dataframe::Bool = false
+    function PMUpdate(time, quantity, value, _dataframe = false)
         if length(time) != length(value)
             error("Time and value vectors must be of equal length")
         else
-            new(time, quantity, value)
+            new(time, quantity, value, _dataframe)
         end
     end
 end
