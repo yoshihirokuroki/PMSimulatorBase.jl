@@ -1103,10 +1103,16 @@ uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
 version = "0.11.28"
 
 [[deps.PMParameterized]]
-deps = ["ComponentArrays", "DifferentialEquations", "MacroTools", "ModelingToolkit", "SciMLBase", "SciMLSensitivity", "Symbolics", "Unitful"]
+deps = ["ComponentArrays", "DifferentialEquations", "MacroTools", "ModelingToolkit", "PMSimulator", "SciMLBase", "SciMLSensitivity", "Symbolics", "Unitful"]
 path = "/Users/knabt/.julia/dev/PMParameterized"
 uuid = "99b5832f-53bf-45ba-a9c8-837ddefabddf"
 version = "0.1.0"
+
+[[deps.PMSimulator]]
+deps = ["DataFrames", "DiffEqCallbacks", "ModelingToolkit", "PMParameterized", "Revise", "SciMLBase", "TidierData"]
+path = "/Users/knabt/.julia/dev/PMSimulator"
+uuid = "d32fc40f-6cc2-4d47-bc8e-739cf280b49f"
+version = "1.0.0-DEV"
 
 [[deps.PackageExtensionCompat]]
 git-tree-sha1 = "fb28e33b8a95c4cee25ce296c817d89cc2e53518"

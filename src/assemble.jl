@@ -47,6 +47,9 @@ function generateInputCB(mdl::PMParameterized.PMModel, tstart::Float64, tinf::Un
     if tstart == 0.0
         if tinf > 0.0
             updateParameterOrState!(mdl, inputP, amt)
+            indexP = getMTKindex(mdl, inputP)
+            cbend = PresetTimeCallback(tstart+tinf, (integrator) -> integrator.p[indexP] = integrator.p[indexP] - amt/tinf)
+            push!(cbset, cbend)
         else
             updateParameterOrState!(mdl, input, amt)
         end
@@ -102,7 +105,6 @@ function collect_evs(evs, mdl::PMParameterized.PMModel)
             error("Error creating event for $(ev.quantity). $(ev.quantity) not found in model states, parameters or equations ")
         else
             if isa(ev, PMInput) && ev.input ∈ vcat(mdl.parameters.names, mdl.states.names, mdl._inputs.names)
-
                 t = ev.time
                 amt = ev.amt
                 tinf = ev.tinf

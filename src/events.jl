@@ -13,8 +13,10 @@ function checkRateTinf(amt::Union{Float64, Vector{Float64}}, rate::Union{Float64
     return (rate, tinf)
 end
 
+struct PMEvent end
 
-Base.@kwdef struct PMInput
+
+Base.@kwdef struct PMInput <: PMEvent
     time::Float64
     amt::Float64
     input::Symbol
@@ -40,7 +42,7 @@ Base.@kwdef struct PMInput
     end
 end
 
-Base.@kwdef struct PMUpdate
+Base.@kwdef struct PMUpdate <: PMEvent
     time::Float64
     quantity::Symbol
     value::Float64
@@ -53,6 +55,8 @@ Base.@kwdef struct PMUpdate
         end
     end
 end
+
+
 
 Base.@kwdef struct PMInstance
     inputs::Vector{PMInput}

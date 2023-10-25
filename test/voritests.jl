@@ -135,7 +135,8 @@ end;
 
 ev1 = PMSimulator.PMInput(time = 1.0, amt = 4.0, tinf = 0.5, input = :Ven);
 ev2 = PMSimulator.PMInput(time = 10.0, amt = 0.25, input = :Ven);
-evs = PMSimulator.collect_evs([ev1, ev2], vori); # Working on moving this into the solve function, should just be able to pass a vector of events
+ev3 = PMSimulator.PMInput(time = 0.0, amt = 0.4, input = :Ven)
+evs = PMSimulator.collect_evs([ev1, ev2, ev3], vori); # Working on moving this into the solve function, should just be able to pass a vector of events
 
 vori.tspan = (0.0, 25.0) # This is kind of hidden, working on a fix...
 

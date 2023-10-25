@@ -13,15 +13,15 @@ theoph = @chain theoph begin
 end;
 
 theoph_ev = PMSimulator.df2evs(theoph);
+# house2 = deepcopy(house);
 house.states.GUT = 0.0
 
 
 ### CREATE COPY OF MODEL FIRST?
+#THIS UPDATES THE MODEL WHICH SEEMS BAD!
 
 cbs = PMSimulator.collect_evs([theoph_ev.instances[1].inputs..., theoph_ev.instances[1].updates...], house);
-sol = PMParameterized.solve(house, callback = cbs);
-
-
-
+sol = PMParameterized.solve(house)#, callback = cbs);
+# sol2 = PMParameterized.solve(house2);
 using Plots
 plot(sol.t, sol.GUT)
