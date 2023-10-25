@@ -32,6 +32,7 @@ function updateParameterOrState!(mdl::PMParameterized.PMModel, sym::Symbol, val:
     if sym in mdl.parameters.names
         mdl.parameters[sym] = val
     elseif sym in mdl.states.names
+
         mdl.states[sym] = val
     elseif sym in mdl._inputs.names
         mdl._inputs[sym] = val
@@ -44,7 +45,11 @@ end
 function generateInputCB(mdl::PMParameterized.PMModel, tstart::Float64, tinf::Union{Float64,Nothing}, amt::Float64, inputP::Symbol, input::Symbol)
     cbset = DiscreteCallback[]
     if tstart == 0.0
-        updateParameterOrState!(mdl, input, amt)
+        if tinf > 0.0
+            updateParameterOrState!(mdl, inputP, amt)
+        else
+            updateParameterOrState!(mdl, input, amt)
+        end
     else
         indexP = getMTKindex(mdl, inputP)
         indexS = getMTKindex(mdl, input)
@@ -62,6 +67,7 @@ function generateInputCB(mdl::PMParameterized.PMModel, tstart::Float64, tinf::Un
     end
     # Infusion end
     if tinf != 0.0
+        indexP = getMTKindex(mdl, inputP)
         cbend = PresetTimeCallback(tstart+tinf, (integrator) -> integrator.p[indexP] = integrator.p[indexP] - amt/tinf)
         push!(cbset, cbend)
     end
@@ -73,8 +79,10 @@ function generateUpdateCB(mdl::PMParameterized.PMModel, update::PMUpdate)
     quantity = update.quantity
     value = update.value
     if time == 0.0
+        # println(quantity)
+        # println(value)
         updateParameterOrState!(mdl, quantity, value)
-        return nothing!
+        return nothing
     else
         index = getMTKindex(mdl, quantity)
         cbtmp = PresetTimeCallback(time, (integrator) -> integrator.p[index] = value)
@@ -85,13 +93,10 @@ end
 
 
 
-function collect_evs(evs::Union{InputOrUpdate, Vector{PMInput}, Vector{PMUpdate}}, mdl::PMParameterized.PMModel)
-    if isa(evs, InputOrUpdate)
-        evs::Vector{InputOrUpdate} = [evs]
-    end
+function collect_evs(evs, mdl::PMParameterized.PMModel)
     cbset = DiscreteCallback[]
     for ev in evs
-        if isa(ev, PMInput)
+        if isa(ev, PMInput) && ev.input ∈ vcat(mdl.parameters.names, mdl.states.names, mdl._inputs.names)
             t = ev.time
             amt = ev.amt
             tinf = ev.tinf
@@ -117,11 +122,13 @@ function collect_evs(evs::Union{InputOrUpdate, Vector{PMInput}, Vector{PMUpdate}
                 cbset_i = generateInputCB(mdl, ti, tinf[i], amt[i], inputP, input)
                 append!(cbset, cbset_i)
             end
-        elseif isa(ev, PMUpdate)
-            cb_i = generateUpdateCB(mdl, PMUpdate)
-            push!(cbset, cb_i)
-        else
-            error("Something went wrong")
+        elseif isa(ev, PMUpdate) && ev.quantity ∈ vcat(mdl.parameters.names, mdl.states.names, mdl._inputs.names)
+            cb_i = generateUpdateCB(mdl, ev)
+            if !isnothing(cb_i)
+                push!(cbset, cb_i)
+            end
+        # else
+            # error("Something went wrong")
         end
     end
     return CallbackSet(cbset...)

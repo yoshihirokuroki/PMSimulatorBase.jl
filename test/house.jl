@@ -34,10 +34,9 @@ house = @model house begin
 
     @observed CP = CENT/VCi
     INH =  (CP/(IC50+CP))
-    @inputs GUTin
 
 
-    @eq D(GUT) ~ -KAi*GUT + GUTin;
+    @eq D(GUT) ~ -KAi*GUT;
     @eq D(CENT) ~ KAi*GUT - (CLi/VCi)*CENT;
     @eq D(RESP) ~ KIN*(1-INH) - KOUTi*RESP
 end;
