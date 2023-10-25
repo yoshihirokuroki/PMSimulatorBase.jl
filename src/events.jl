@@ -1,4 +1,3 @@
-using SciMLBase
 function checkRateTinf(amt::Union{Float64, Vector{Float64}}, rate::Union{Float64,Vector{Float64}, Nothing}, tinf::Union{Float64,Vector{Float64}, Nothing})
     if isnothing(rate) && !isnothing(tinf)
         rate = amt ./ tinf
@@ -12,7 +11,7 @@ function checkRateTinf(amt::Union{Float64, Vector{Float64}}, rate::Union{Float64
     return (rate, tinf)
 end
 
-struct PMEvent end
+abstract type PMEvent end
 
 
 Base.@kwdef struct PMInput <: PMEvent
