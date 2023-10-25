@@ -11,7 +11,6 @@ function checkRateTinf(amt::Union{Float64, Vector{Float64}}, rate::Union{Float64
     return (rate, tinf)
 end
 
-abstract type PMEvent end
 
 
 Base.@kwdef struct PMInput <: PMEvent

@@ -1,14 +1,13 @@
 module PMSimulatorBase
 using ModelingToolkit
 using SciMLBase
-using DiffEqCallbacks
+abstract type PMEvent end
 
 include("events.jl")
-include("assemble.jl")
 include("evsFromDF.jl")
 
 export PMUpdate
 export PMInput
-
+export df2evs
 
 end

@@ -5,10 +5,9 @@ version = "1.0.0-DEV"
 
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-DiffEqCallbacks = "459566f4-90b8-5000-8ac3-15dfb0a30def"
 ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
-PMParameterizedBase = "99b5832f-53bf-45ba-a9c8-837ddefabddf"
 SciMLBase = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
+TidierData = "fe2206b3-d496-4ee9-a338-6a095c4ece80"
 
 [compat]
 julia = "1.10"
