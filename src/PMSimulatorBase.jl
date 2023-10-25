@@ -1,7 +1,6 @@
 module PMSimulatorBase
 using ModelingToolkit
 using SciMLBase
-PM
 abstract type PMEvent end
 
 include("events.jl")

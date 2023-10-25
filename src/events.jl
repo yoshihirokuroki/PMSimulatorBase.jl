@@ -62,9 +62,8 @@ Base.@kwdef struct PMInstance
 end
 
 
-Base.@kwdef struct PMEnsemble
+Base.@kwdef struct PMEvents
     instances::Vector{PMInstance}
-    # _solution::Union{Nothing, Vector{PMParameterized.PMSolution}}
 end
 
 

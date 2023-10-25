@@ -12,7 +12,7 @@ theoph = @chain theoph begin
     @mutate(tinf = 2.0)
 end;
 
-theoph_ev = PMSimulator.df2evs(theoph);
+theoph_ev = df2evs(theoph);
 # house2 = deepcopy(house);
 house.states.GUT = 0.0
 

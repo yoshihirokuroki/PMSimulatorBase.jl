@@ -72,7 +72,7 @@ function df2evs(dfin::AbstractDataFrame)
         instance_i = PMInstance(inputs = ev_inputs_id, updates = ev_updates_id, ID = idtmp)
         push!(instancevec, instance_i)
     end
-    out = PMEnsemble(instances = instancevec, _solution = nothing)
+    out = PMEvents(instances = instancevec)
     return out
 end
 
