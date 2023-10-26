@@ -23,9 +23,13 @@ function expandDoseEvents!(idf::AbstractDataFrame)
     if !("ii" in names(idf)); idf[:,:ii] .= 0.0; end
     if !("addl" in names(idf)); idf[:,:addl] .= 0; end
     if !("rate" in names(idf)); idf[:,:rate] .= 0.0; end
-    if !("F" in names(idf)); warning("F not currently supported"); idf[:,:F] .= 1.0; end
-    if !("alag" in names(idf)); warning("alag not currently supported"); idf[:,:alag] .= 0.0; end
-    if !("ss" in names(idf)); warning("ss not currently supported"); idf[:,:ss] .= 0.0; end
+    # if !("F" in names(idf)); idf[:,:F] .= 1.0; end
+    # if !("alag" in names(idf)); idf[:,:alag] .= 0.0; end
+    # if !("ss" in names(idf)); idf[:,:ss] .= 0.0; end
+
+    if ("F" in names(df)); @warn "F not currently supported"; end
+    if ("alag" in names(df)); @warn "alag not currently supported"; end
+    if ("ss" in names(df)); @warn "ss not currently supported"; end
 
     idf_dose = idf[idf.evid .== 1,:] 
     idf_dose_no_ii = idf_dose[idf_dose.ii .== 0.0,:] 

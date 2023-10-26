@@ -17,9 +17,14 @@ function df2evs(dfin::AbstractDataFrame)
     if !("ii" in names(df)); df[:,:ii] .= 0.0; end
     if !("addl" in names(df)); df[:,:addl] .= 0; end
     if !("rate" in names(df)); df[:,:rate] .= 0.0; end
-    if !("F" in names(df)); @warn "F not currently supported" ; df[:,:F] .= 1.0; end
-    if !("alag" in names(df)); @warn "alag not currently supported" ; df[:,:alag] .= 0.0; end
-    if !("ss" in names(df)); @warn "ss not currently supported" ; df[:,:ss] .= 0.0; end
+    # if !("F" in names(df)); df[:,:F] .= 1.0; end
+    # if !("alag" in names(df)); df[:,:alag] .= 0.0; end
+    # if !("ss" in names(df)); df[:,:ss] .= 0.0; end
+
+    if ("F" in names(df)); @warn "F not currently supported"; end
+    if ("alag" in names(df)); @warn "alag not currently supported"; end
+    if ("ss" in names(df)); @warn "ss not currently supported"; end
+
 
     if "tinf" ∉ names(df)
         df[!,:tinf] .= 0.0
