@@ -12,5 +12,6 @@ export PMInput
 export df2evs
 export buildInstance
 export combineInstances
+export PMEvent
 
 end
