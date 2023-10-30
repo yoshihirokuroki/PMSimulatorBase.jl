@@ -7,6 +7,7 @@ PMModel = PMParameterizedBase.PMModel
 include("events.jl")
 include("evsFromDF.jl")
 include("helpers.jl")
+includ("assemble.jl")
 include("collect_evs.jl")
 
 export PMUpdate
