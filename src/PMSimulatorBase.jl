@@ -3,8 +3,8 @@ using ModelingToolkit
 using SciMLBase
 using PMParameterizedBase
 using DiffEqCallbacks
-abstract type PMEvent end
 PMModel = PMParameterizedBase.PMModel
+PMEvent = PMParameterizedBase.PMEvent
 include("events.jl")
 include("evsFromDF.jl")
 include("helpers.jl")

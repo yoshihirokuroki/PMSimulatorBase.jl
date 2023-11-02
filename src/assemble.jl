@@ -49,8 +49,6 @@ function generateInputCB(mdl::PMModel, tstart::Float64, tinf::Union{Float64,Noth
         if tinf > 0.0
             updateInput!(mdl, input, amt)
             indexP = getMTKindex(mdl, inputP)
-            cbend = PresetTimeCallback(tstart+tinf, (integrator) -> integrator.p[indexP] = integrator.p[indexP] - amt/tinf)
-            push!(cbset, cbend)
         else
             # WE NEED TO FIX THINGS HERE!
             updateParameterOrState!(mdl, input, amt)

@@ -24,9 +24,12 @@ function collect_evs(evs, mdl::PMModel)
                 end
 
                 if !iszero(addl)
-                    amt = [amt for i in 1:addl]
-                    tinf = [isnothing(tinf) ? 0.0 : tinf for i in 1:addl]
+                    amt = [amt for i in 1:(addl+1)]
+                    tinf = [isnothing(tinf) ? 0.0 : tinf for i in 1:(addl+1)]
                     t = [t + (ii * (i-1)) for i in 1:addl]
+                    if mdl.tspan[2] < t[end]
+                        mdl.tspan = (mdl.tspan[1], t[end]+ii)
+                    end
                 else
                     tinf = isnothing(tinf) ? 0.0 : tinf
                 end
