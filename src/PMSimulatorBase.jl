@@ -1,7 +1,7 @@
 module PMSimulatorBase
 using ModelingToolkit
 using SciMLBase
-using PMParameterizedBase
+using ..PMParameterizedBase
 using DiffEqCallbacks
 PMModel = PMParameterizedBase.PMModel
 PMEvent = PMParameterizedBase.PMEvent
